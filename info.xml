@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<extension key="nl.roparun.reports" type="module">
+  <file>reports</file>
+  <name>Roparun reports</name>
+  <description>The following reports are included in this extension.
+  	- Teams: Report with the team information and the teamcaptain. Used as export from CiviCRM to Roparun live.
+	</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Jaap Jansma</author>
+    <email>jaap@edeveloper.nl</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">https://github.com/civicoop/nl.roparun.reports</url>
+    <url desc="Documentation">https://github.com/civicoop/nl.roparun.reports/README.md</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2017-10-11</releaseDate>
+  <version>1.0</version>
+  <develStage>stable</develStage>
+  <compatibility>
+    <ver>4.7</ver>
+  </compatibility>
+  <civix>
+    <namespace>CRM/Reports</namespace>
+  </civix>
+</extension>
