@@ -245,7 +245,7 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
   }
 
   function preProcess() {
-    $this->assign('reportTitle', E::ts('Membership Detail Report'));
+    $this->assign('reportTitle', E::ts('Teams - export roparun live'));
     parent::preProcess();
   }
 
@@ -291,57 +291,7 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
 				 ";
   }
 
-  /*function where() {
-    $clauses = array();
-    foreach ($this->_columns as $tableName => $table) {
-      if (array_key_exists('filters', $table)) {
-        foreach ($table['filters'] as $fieldName => $field) {
-          $clause = NULL;
-          if (CRM_Utils_Array::value('operatorType', $field) & CRM_Utils_Type::T_DATE) {
-            $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
-            $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
-            $to       = CRM_Utils_Array::value("{$fieldName}_to", $this->_params);
-
-            $clause = $this->dateClause($field['name'], $relative, $from, $to, $field['type']);
-          }
-          else {
-            $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
-            if ($op) {
-              $clause = $this->whereClause($field,
-                $op,
-                CRM_Utils_Array::value("{$fieldName}_value", $this->_params),
-                CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
-                CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
-              );
-            }
-          }
-
-          if (!empty($clause)) {
-            $clauses[] = $clause;
-          }
-        }
-      }
-    }
-
-    if (empty($clauses)) {
-      $this->_where = "WHERE ( 1 ) ";
-    }
-    else {
-      $this->_where = "WHERE " . implode(' AND ', $clauses);
-    }
-
-    if ($this->_aclWhere) {
-      $this->_where .= " AND {$this->_aclWhere} ";
-    }
-  }*/
-
-  /*function groupBy() {
-    $this->_groupBy = " GROUP BY {$this->_aliases['civicrm_contact']}.id, {$this->_aliases['civicrm_membership']}.membership_type_id";
-  }
-
-  function orderBy() {
-    $this->_orderBy = " ORDER BY {$this->_aliases['civicrm_contact']}.sort_name, {$this->_aliases['civicrm_contact']}.id, {$this->_aliases['civicrm_membership']}.membership_type_id";
-  }*/
+  
 
   /*function postProcess() {
 
