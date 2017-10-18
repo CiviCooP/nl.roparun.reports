@@ -8,24 +8,6 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
   protected $_customGroupExtends = array();
   protected $_customGroupGroupBy = FALSE; 
 	protected $_noFields = TRUE;
-	
-	private $_teamDataCustomGroupTableName;
-	private $_teamDataCustomGroupId;
-	private $_teamNrCustomFieldColumnName;
-	private $_teamNrCustomFieldId;
-	private $_teamNameCustomFieldColumnName;
-	private $_teamNameCustomFieldId;
-	private $_donatedTowardsCustomGroupId;
-	private $_donatedTowardsCustomGroupTableName;
-	private $_towardsTeamCustomFieldId;
-	private $_towardsTeamCustomFieldColumnName;
-	private $_towardsTeamMemberCustomFieldId;
-	private $_towardsTeamMemberCustomFieldColumnName;
-	private $_completedContributionStatusId;
-	private $_teamParticipantRoleId;
-	private $_donatieFinancialTypeId;
-	private $_collecteFinancialTypeId;
-	private $_loterijFinancialTypeId;
 	private $activeCampaigns;
   
   function __construct() {
@@ -51,92 +33,6 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
       )
   	);
 		
-		try {
-			$_teamDataCustomGroup = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'team_data'));
-			$this->_teamDataCustomGroupId = $_teamDataCustomGroup['id'];
-			$this->_teamDataCustomGroupTableName = $_teamDataCustomGroup['table_name'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom group for Team data');
-		}
-		try {
-			$_teamNrCustomField = civicrm_api3('CustomField', 'getsingle', array('name' => 'team_nr', 'custom_group_id' => $this->_teamDataCustomGroupId));
-			$this->_teamNrCustomFieldColumnName = $_teamNrCustomField['column_name'];
-			$this->_teamNrCustomFieldId = $_teamNrCustomField['id'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom field Team NR');
-		}
-		try {
-			$_teamNameCustomField = civicrm_api3('CustomField', 'getsingle', array('name' => 'team_name', 'custom_group_id' => $this->_teamDataCustomGroupId));
-			$this->_teamNameCustomFieldColumnName = $_teamNameCustomField['column_name'];
-			$this->_teamNameCustomFieldId = $_teamNameCustomField['id'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom field Team Name');
-		}
-		
-		try {
-			$this->_donatieFinancialTypeId = civicrm_api3('FinancialType', 'getvalue', array(
-				'name' => 'Donatie',
-				'return' => 'id',
-			));
-		} catch (Exception $e) {
-			throw new Exception('Could not retrieve financial type Donatie');
-		}
-		try {
-			$this->_collecteFinancialTypeId = civicrm_api3('FinancialType', 'getvalue', array(
-				'name' => 'Opbrengst collecte',
-				'return' => 'id',
-			));
-		} catch (Exception $e) {
-			throw new Exception('Could not retrieve financial type Opbrengst collecte');
-		}
-		try {
-			$this->_loterijFinancialTypeId = civicrm_api3('FinancialType', 'getvalue', array(
-				'name' => 'Opbrengst lotterij',
-				'return' => 'id',
-			));
-		} catch (Exception $e) {
-			throw new Exception('Could not retrieve financial type Opbrengst lotterij');
-		}
-		try {
-			$this->_teamParticipantRoleId = civicrm_api3('OptionValue', 'getvalue', array(
-				'return' => 'value',
-				'name' => 'Team',
-				'option_group_id' => 'participant_role',
-			));
-		} catch (Exception $ex) {
-			throw new Exception ('Could not retrieve the Team participant role');
-		}
-		try {
-			$this->_completedContributionStatusId = civicrm_api3('OptionValue', 'getvalue', array(
-				'return' => 'value',
-				'name' => 'Completed',
-				'option_group_id' => 'contribution_status',
-			));
-		} catch (Exception $ex) {
-			throw new Exception ('Could not retrieve the Contribution status completed');
-		}
-		try {
-			$_donatedTowardsCustomGroup = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'donated_towards'));
-			$this->_donatedTowardsCustomGroupId = $_donatedTowardsCustomGroup['id'];
-			$this->_donatedTowardsCustomGroupTableName = $_donatedTowardsCustomGroup['table_name'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom group for Donated Towards');
-		}
-		try {
-			$_towardsTeamCustomField = civicrm_api3('CustomField', 'getsingle', array('name' => 'towards_team', 'custom_group_id' => $this->_donatedTowardsCustomGroupId));
-			$this->_towardsTeamCustomFieldColumnName = $_towardsTeamCustomField['column_name'];
-			$this->_towardsTeamCustomFieldId = $_towardsTeamCustomField['id'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom field Towards Team');
-		}
-		try {
-			$_towardsTeamMemberCustomField = civicrm_api3('CustomField', 'getsingle', array('name' => 'towards_team_member', 'custom_group_id' => $this->_donatedTowardsCustomGroupId));
-			$this->_towardsTeamMemberCustomFieldColumnName = $_towardsTeamMemberCustomField['column_name'];
-			$this->_towardsTeamMemberCustomFieldId = $_towardsTeamMemberCustomField['id'];
-		} catch (Exception $ex) {
-			throw new Exception('Could not find custom field Towards Team Member');
-		}
-		
 		$this->_groupFilter = FALSE;
     $this->_tagFilter = FALSE;
 		$this->_exposeContactID = FALSE;
@@ -151,19 +47,22 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
   }
 
 	public function select() {
-    $this->_select = "SELECT {$this->_aliases['civicrm_participant']}.contact_id as contact_id, {$this->_teamNrCustomFieldColumnName} as team_nr, {$this->_teamNameCustomFieldColumnName} as team_name "; 
+		$config = CRM_Generic_Config::singleton();
+    $this->_select = "SELECT {$this->_aliases['civicrm_participant']}.contact_id as contact_id, {$config->getTeamNrCustomFieldColumnName()} as team_nr, {$config->getTeamNameCustomFieldColumnName()} as team_name "; 
 	}
 
 	function from() {
+		$config = CRM_Generic_Config::singleton();
     $this->_from = "
          FROM civicrm_participant {$this->_aliases['civicrm_participant']}
          INNER JOIN civicrm_event {$this->_aliases['civicrm_event']} ON {$this->_aliases['civicrm_participant']}.event_id = {$this->_aliases['civicrm_event']}.id
-         INNER JOIN {$this->_teamDataCustomGroupTableName} ON {$this->_teamDataCustomGroupTableName}.entity_id = {$this->_aliases['civicrm_participant']}.id  
+         INNER JOIN {$config->getTeamDataCustomGroupTableName()} team_data ON team_data.entity_id = {$this->_aliases['civicrm_participant']}.id  
 				 ";
   }
   
   public function orderBy() {
-  	$this->_orderBy = "ORDER BY {$this->_teamNrCustomFieldColumnName}, {$this->_teamNameCustomFieldColumnName}";
+  	$config = CRM_Generic_Config::singleton();
+  	$this->_orderBy = "ORDER BY {$config->getTeamNrCustomFieldColumnName()}, {$config->getTeamNameCustomFieldColumnName()}";
   }
   
   /**
@@ -182,8 +81,9 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
    */
   public function where() {
     $this->storeWhereHavingClauseArray();
+    $config = CRM_Generic_Config::singleton();
     $this->_whereClauses[] = "{$this->_aliases['civicrm_participant']}.is_test = 0";
-    $this->_whereClauses[] = "{$this->_aliases['civicrm_participant']}.role_id = ".$this->_teamParticipantRoleId;
+    $this->_whereClauses[] = "{$this->_aliases['civicrm_participant']}.role_id = ".$config->getTeamParticipantRoleId();
 
     if (empty($this->_whereClauses)) {
       $this->_where = "WHERE ( 1 ) ";
