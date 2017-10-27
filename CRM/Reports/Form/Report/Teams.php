@@ -36,9 +36,11 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
             'default' => TRUE,
             'no_repeat' => TRUE,
           ),
-          'id' => array(
+          'team_id' => array(
           	'title' => E::ts('Team contactnr.'),
+          	'name' => 'id',
             'required' => TRUE,
+            'default' => TRUE,
           ),
         ),
         'filters' => array(
