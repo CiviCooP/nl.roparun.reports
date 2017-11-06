@@ -291,9 +291,7 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
 				 LEFT JOIN civicrm_website {$this->_aliases['facebook']} ON {$this->_aliases['facebook']}.contact_id = {$this->_aliases['team']}.id AND {$this->_aliases['facebook']}.website_type_id = {$facebookWebsiteTypeId}
 				 LEFT JOIN civicrm_website {$this->_aliases['twitter']} ON {$this->_aliases['twitter']}.contact_id = {$this->_aliases['team']}.id AND {$this->_aliases['twitter']}.website_type_id = {$twitterWebsiteTypeId}
 				 ";
-  }
-
-  
+  }  
 
   /*function postProcess() {
 
@@ -311,68 +309,14 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
     $this->endPostProcess($rows);
   }*/
 
-  /*function alterDisplay(&$rows) {
-    // custom code to alter rows
-    $entryFound = FALSE;
-    $checkList = array();
+  function alterDisplay(&$rows) {
     foreach ($rows as $rowNum => $row) {
-
-      if (!empty($this->_noRepeats) && $this->_outputMode != 'csv') {
-        // not repeat contact display names if it matches with the one
-        // in previous row
-        $repeatFound = FALSE;
-        foreach ($row as $colName => $colVal) {
-          if (CRM_Utils_Array::value($colName, $checkList) &&
-            is_array($checkList[$colName]) &&
-            in_array($colVal, $checkList[$colName])
-          ) {
-            $rows[$rowNum][$colName] = "";
-            $repeatFound = TRUE;
-          }
-          if (in_array($colName, $this->_noRepeats)) {
-            $checkList[$colName][] = $colVal;
-          }
-        }
-      }
-
-      if (array_key_exists('civicrm_membership_membership_type_id', $row)) {
-        if ($value = $row['civicrm_membership_membership_type_id']) {
-          $rows[$rowNum]['civicrm_membership_membership_type_id'] = CRM_Member_PseudoConstant::membershipType($value, FALSE);
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_address_state_province_id', $row)) {
-        if ($value = $row['civicrm_address_state_province_id']) {
-          $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_address_country_id', $row)) {
-        if ($value = $row['civicrm_address_country_id']) {
-          $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_contact_sort_name', $row) &&
-        $rows[$rowNum]['civicrm_contact_sort_name'] &&
-        array_key_exists('civicrm_contact_id', $row)
-      ) {
-        $url = CRM_Utils_System::url("civicrm/contact/view",
-          'reset=1&cid=' . $row['civicrm_contact_id'],
-          $this->_absoluteUrl
-        );
-        $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
-        $rows[$rowNum]['civicrm_contact_sort_name_hover'] = E::ts("View Contact Summary for this Contact.");
-        $entryFound = TRUE;
-      }
-
-      if (!$entryFound) {
-        break;
-      }
+    	if (!empty($row['vestigingsland_name'])) {
+    		$rows[$rowNum]['vestigingsland_name'] = ts($row['vestigingsland_name'], array(
+          'context' => 'country',
+        ));
+    	}
     }
-  }*/
+  }
 
 }
