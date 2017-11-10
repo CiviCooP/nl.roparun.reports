@@ -284,7 +284,7 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
 				 INNER JOIN civicrm_contact {$this->_aliases['captain']} ON {$this->_aliases['captain']}.id = {$this->_aliases['relationship']}.contact_id_a
 				 LEFT JOIN civicrm_address {$this->_aliases['vestigingsadres']} ON {$this->_aliases['vestigingsadres']}.contact_id = {$this->_aliases['team']}.id {$vestigingsadres_location_type}
 				 LEFT JOIN civicrm_country {$this->_aliases['vestigingsland']} ON {$this->_aliases['vestigingsadres']}.country_id = {$this->_aliases['vestigingsland']}.id
-				 LEFT JOIN civicrm_email {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id = {$this->_aliases['team']}.id AND {$this->_aliases['email']}.is_primary = 1
+				 LEFT JOIN civicrm_email {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id = {$this->_aliases['captain']}.id AND {$this->_aliases['email']}.is_primary = 1
 				 LEFT JOIN civicrm_address {$this->_aliases['address']} ON {$this->_aliases['address']}.contact_id = {$this->_aliases['team']}.id AND {$this->_aliases['address']}.is_primary = 1
 				 LEFT JOIN civicrm_phone {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id = {$this->_aliases['captain']}.id AND {$this->_aliases['phone']}.is_primary = 1
 				 LEFT JOIN civicrm_website {$this->_aliases['website']} ON {$this->_aliases['website']}.contact_id = {$this->_aliases['team']}.id AND {$this->_aliases['website']}.website_type_id = {$websiteWebsiteTypeId}
