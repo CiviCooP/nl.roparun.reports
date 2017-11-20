@@ -187,16 +187,6 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
             'options' => $relationshipTypeOptions,
             'type' => CRM_Utils_Type::T_INT,
           ),
-          'is_active' => array(
-            'title' => ts('Relationship Status'),
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array(
-              '' => ts('- Any -'),
-              1 => ts('Active'),
-              0 => ts('Inactive'),
-            ),
-            'type' => CRM_Utils_Type::T_INT,
-          ),
         ),
 			),
       'captain' => array(
@@ -280,7 +270,7 @@ class CRM_Reports_Form_Report_Teams extends CRM_Report_Form {
          INNER JOIN civicrm_participant {$this->_aliases['civicrm_participant']}
                           ON {$this->_aliases['team']}.id =
                              {$this->_aliases['civicrm_participant']}.contact_id AND {$this->_aliases['civicrm_participant']}.is_test = 0
-         INNER JOIN civicrm_relationship {$this->_aliases['relationship']} ON {$this->_aliases['team']}.id = {$this->_aliases['relationship']}.contact_id_b
+         INNER JOIN civicrm_relationship {$this->_aliases['relationship']} ON {$this->_aliases['team']}.id = {$this->_aliases['relationship']}.contact_id_b AND is_active = 1
 				 INNER JOIN civicrm_contact {$this->_aliases['captain']} ON {$this->_aliases['captain']}.id = {$this->_aliases['relationship']}.contact_id_a
 				 LEFT JOIN civicrm_address {$this->_aliases['vestigingsadres']} ON {$this->_aliases['vestigingsadres']}.contact_id = {$this->_aliases['team']}.id {$vestigingsadres_location_type}
 				 LEFT JOIN civicrm_country {$this->_aliases['vestigingsland']} ON {$this->_aliases['vestigingsadres']}.country_id = {$this->_aliases['vestigingsland']}.id
