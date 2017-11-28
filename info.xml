@@ -4,6 +4,7 @@
   <name>Roparun reports</name>
   <description>The following reports are included in this extension.
   	- Teams: Report with the team information and the teamcaptain. Used as export from CiviCRM to Roparun live.
+	- TeamStanden: report with the total amount donated per team. Used for financial reporting.
 	</description>
   <license>AGPL-3.0</license>
   <maintainer>
@@ -15,8 +16,8 @@
     <url desc="Documentation">https://github.com/civicoop/nl.roparun.reports/README.md</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2017-11-20</releaseDate>
-  <version>1.1</version>
+  <releaseDate>2017-11-28</releaseDate>
+  <version>1.2</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.7</ver>
