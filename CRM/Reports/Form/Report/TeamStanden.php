@@ -162,17 +162,31 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
     $unselectedSectionColumns = $this->unselectedSectionColumns();
 		$campaign_id = $this->_params['campaign_id_value'];
 		
-		$roparunRow = array(
+		$totalRow = array(
 			'contact_id' => false,
 			'team_nr' => '',
-			'team_name' => 'Roparun',
-			'loterij' => '',
-			'collecte' => '',
-			'donaties_team' => CRM_Generic_Teamstanden::getTotalAmountDonatedForTeams($campaign_id),
+			'team_name' => 'Totaal',
+			'loterij' => CRM_Generic_Teamstanden::getTotalAmountLoterij($campaign_id),
+			'collecte' => CRM_Generic_Teamstanden::getTotalAmountCollecte($campaign_id),
+			'donaties_team' => CRM_Generic_Teamstanden::getTotalAmountDonatedForTeams($campaign_id, true),
 			'donaties_teamleden' => '',
 			'donaties_roparun' => CRM_Generic_Teamstanden::getTotalAmountDonatedForRoparun($campaign_id),
 			'totaal' => CRM_Generic_Teamstanden::getTotalAmountDonated($campaign_id),
 		);
+		
+		$roparunRow = array(
+			'contact_id' => false,
+			'team_nr' => '',
+			'team_name' => 'Roparun',
+			'loterij' => CRM_Generic_Teamstanden::getTotalAmountLoterijForRoparun($campaign_id),
+			'collecte' => CRM_Generic_Teamstanden::getTotalAmountCollecteForRoparun($campaign_id),
+			'donaties_team' => '',
+			'donaties_teamleden' => '',
+			'donaties_roparun' => CRM_Generic_Teamstanden::getTotalAmountDonatedForRoparun($campaign_id),
+			'totaal' => ''
+		);
+		$roparunRow['totaal'] = $roparunRow['loterij'] + $roparunRow['collecte'] + $roparunRow['donaties_roparun'];
+		$rows[] = $totalRow;
 		$rows[] = $roparunRow;
 
     while ($dao->fetch()) {
@@ -200,232 +214,4 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
       $rows[] = $row;
     }
   }
-
-	/**
-	 * Returns the total amount donated for a team and a campaign.
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeam($team_id, $campaign_id) {
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;
-		$financialTypeIds[] = $this->_collecteFinancialTypeId;
-		$financialTypeIds[] = $this->_loterijFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			INNER JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = %1
-			AND civicrm_contribution.campaign_id = %2
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %3";
-		$params[1] = array($team_id, 'Integer');
-		$params[2] = array($campaign_id, 'Integer');
-		$params[3] = array($this->_completedContributionStatusId, 'Integer');
-		
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a team and a campaign.
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeam_OnlyTeam($team_id, $campaign_id) {		
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			INNER JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = %1
-			AND donated_towards.{$this->_towardsTeamMemberCustomFieldColumnName} IS NULL
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.campaign_id = %2
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %3
-			";
-		$params[1] = array($team_id, 'Integer');
-		$params[2] = array($campaign_id, 'Integer');
-		$params[3] = array($this->_completedContributionStatusId, 'Integer');
-		
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a team and a campaign.
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeam_TeamMembers($team_id, $campaign_id) {
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;		
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			INNER JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = %1
-			AND donated_towards.{$this->_towardsTeamMemberCustomFieldColumnName} IS NOT NULL
-			AND civicrm_contribution.campaign_id = %2
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %3
-			";
-		$params[1] = array($team_id, 'Integer');
-		$params[2] = array($campaign_id, 'Integer');
-		$params[3] = array($this->_completedContributionStatusId, 'Integer');
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a team and a campaign.
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeam_Collecte($team_id, $campaign_id) {		
-		$financialTypeIds[] = $this->_collecteFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			INNER JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = %1
-			AND civicrm_contribution.campaign_id = %2
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %3";
-		$params[1] = array($team_id, 'Integer');
-		$params[2] = array($campaign_id, 'Integer');
-		$params[3] = array($this->_completedContributionStatusId, 'Integer');
-		
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a team and a campaign.
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeam_Loterij($team_id, $campaign_id) {		
-		$financialTypeIds[] = $this->_loterijFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			INNER JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = %1
-			AND civicrm_contribution.campaign_id = %2
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %3";
-		$params[1] = array($team_id, 'Integer');
-		$params[2] = array($campaign_id, 'Integer');
-		$params[3] = array($this->_completedContributionStatusId, 'Integer');
-		
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a campaign
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForRoparun($campaign_id) {		
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;
-		$financialTypeIds[] = $this->_collecteFinancialTypeId;
-		$financialTypeIds[] = $this->_loterijFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			LEFT JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE (donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` IS NULL OR donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` = 0)
-			AND civicrm_contribution.campaign_id = %1
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %2";
-		$params[1] = array($campaign_id, 'Integer');
-		$params[2] = array($this->_completedContributionStatusId, 'Integer');
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-	
-	/**
-	 * Returns the total amount donated for a campaign
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonated($campaign_id) {		
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;
-		$financialTypeIds[] = $this->_collecteFinancialTypeId;
-		$financialTypeIds[] = $this->_loterijFinancialTypeId;
-	
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			WHERE civicrm_contribution.campaign_id = %1
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %2";
-		$params[1] = array($campaign_id, 'Integer');
-		$params[2] = array($this->_completedContributionStatusId, 'Integer');
-		
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
-
-	/**
-	 * Returns the total amount donated for a campaign
-	 * 
-	 * @param int $team_id
-	 * 	The contact id of the team
-	 * @param int $campaign_id
-	 * 	The ID of the campaign.
-	 * @return float
-	 */
-	protected function getTotalAmountDonatedForTeams($campaign_id) {
-		$financialTypeIds[] = $this->_donatieFinancialTypeId;
-		$financialTypeIds[] = $this->_collecteFinancialTypeId;
-		$financialTypeIds[] = $this->_loterijFinancialTypeId;
-		
-		$sql = "
-			SELECT SUM(total_amount) 
-			FROM civicrm_contribution
-			LEFT JOIN `{$this->_donatedTowardsCustomGroupTableName}` donated_towards ON donated_towards.entity_id = civicrm_contribution.id
-			WHERE (donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` IS NOT NULL AND donated_towards.`{$this->_towardsTeamCustomFieldColumnName}` != 0)
-			AND civicrm_contribution.campaign_id = %1
-			AND civicrm_contribution.is_test = 0
-			AND civicrm_contribution.financial_type_id IN (" . implode(",", $financialTypeIds) . ")
-			AND civicrm_contribution.contribution_status_id = %2";
-		$params[1] = array($campaign_id, 'Integer');
-		$params[2] = array($this->_completedContributionStatusId, 'Integer');
-
-		return (float) CRM_Core_DAO::singleValueQuery($sql, $params);
-	}
 }	
