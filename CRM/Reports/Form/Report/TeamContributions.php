@@ -403,7 +403,7 @@ class CRM_Reports_Form_Report_TeamContributions extends CRM_Report_Form {
 		$config = CRM_Generic_Config::singleton();
 		$teams = array('' => E::ts(' - Alle teams - '));
     $select = "SELECT DISTINCT {$this->_aliases['civicrm_participant']}.id, {$this->_aliases['civicrm_participant']}.contact_id, {$this->_aliases['team_data']}.{$config->getTeamNrCustomFieldColumnName()} as team_nr, {$this->_aliases['team_data']}.{$config->getTeamNameCustomFieldColumnName()} as team_name";
-		$where = str_replace(" AND {$this->_aliases['civicrm_participant']}.contact_id = '".$this->_team."'", "", $this->_where);
+		$where = str_replace("{$this->_aliases['civicrm_participant']}.contact_id = '".$this->_team."'", "1", $this->_where);
     $sql = "{$select} {$this->_from} {$where} {$this->_groupBy} {$this->_having} ORDER BY team_nr, team_name";
     $dao = CRM_Core_DAO::executeQuery($sql);
     while($dao->fetch()) {
