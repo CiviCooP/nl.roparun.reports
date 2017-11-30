@@ -196,6 +196,12 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
           $row[$key] = $dao->$key;
         }
       }
+			$url = CRM_Utils_System::url("civicrm/report/nl.roparun.reports/teamcontributions",
+          'reset=1&force=1&team=' . $row['contact_id'].'&campaign_id_op='.$this->_params['campaign_id_op'].'&campaign_id_value='.$this->_params['campaign_id_value'], 
+          $this->_absoluteUrl
+        );
+			$row['team_name_link'] = $url;
+      $row['team_name_hover'] = ts("View Contact Summary for this Contact.");
 
       // section headers not selected for display need to be added to row
       foreach ($unselectedSectionColumns as $key => $values) {
