@@ -183,9 +183,8 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
 			'donaties_team' => '',
 			'donaties_teamleden' => '',
 			'donaties_roparun' => CRM_Generic_Teamstanden::getTotalAmountDonatedForRoparun($campaign_id),
-			'totaal' => ''
+			'totaal' => CRM_Generic_Teamstanden::getTotalAmountForRoparun($campaign_id),
 		);
-		$roparunRow['totaal'] = $roparunRow['loterij'] + $roparunRow['collecte'] + $roparunRow['donaties_roparun'];
 		$rows[] = $totalRow;
 		$rows[] = $roparunRow;
 
