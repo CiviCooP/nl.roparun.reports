@@ -126,6 +126,10 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
     	'title' => 'Collecte',
     	'type' => CRM_Utils_Type::T_MONEY,
     );
+    $this->_columnHeaders['sms'] = array(
+      'title' => 'SMS Donaties',
+      'type' => CRM_Utils_Type::T_MONEY,
+    );
 		$this->_columnHeaders['donaties_team'] = array(
     	'title' => 'Donaties team',
     	'type' => CRM_Utils_Type::T_MONEY,
@@ -168,6 +172,7 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
 			'team_name' => 'Totaal',
 			'loterij' => CRM_Generic_Teamstanden::getTotalAmountLoterij($campaign_id),
 			'collecte' => CRM_Generic_Teamstanden::getTotalAmountCollecte($campaign_id),
+			'sms' => CRM_Generic_Teamstanden::getTotalAmountSmsDonation($campaign_id),
 			'donaties_team' => CRM_Generic_Teamstanden::getTotalAmountDonatedForTeams($campaign_id, true),
 			'donaties_teamleden' => '',
 			'donaties_roparun' => CRM_Generic_Teamstanden::getTotalAmountDonatedForRoparun($campaign_id),
@@ -180,6 +185,7 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
 			'team_name' => 'Roparun',
 			'loterij' => CRM_Generic_Teamstanden::getTotalAmountLoterijForRoparun($campaign_id),
 			'collecte' => CRM_Generic_Teamstanden::getTotalAmountCollecteForRoparun($campaign_id),
+			'sms' => CRM_Generic_Teamstanden::getTotalAmountSmsDonationsForRoparun($campaign_id),
 			'donaties_team' => '',
 			'donaties_teamleden' => '',
 			'donaties_roparun' => CRM_Generic_Teamstanden::getTotalAmountDonatedForRoparun($campaign_id),
@@ -211,6 +217,7 @@ class CRM_Reports_Form_Report_TeamStanden extends CRM_Report_Form {
 			
 			$row['loterij'] = CRM_Generic_Teamstanden::getTotalAmountDonatedForTeam_Loterij($dao->contact_id, $campaign_id);
 			$row['collecte'] = CRM_Generic_Teamstanden::getTotalAmountDonatedForTeam_Collecte($dao->contact_id, $campaign_id);
+      $row['sms'] = CRM_Generic_Teamstanden::getTotalAmountDonatedForTeam_Sms($dao->contact_id, $campaign_id);
 			$row['donaties_team'] = CRM_Generic_Teamstanden::getTotalAmountDonatedForTeam_OnlyTeam($dao->contact_id, $campaign_id);
 			$row['donaties_teamleden'] = CRM_Generic_Teamstanden::getTotalAmountDonatedForTeam_TeamMembers($dao->contact_id, $campaign_id);
 			$row['donaties_roparun'] = 0.00;
